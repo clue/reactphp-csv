@@ -1,0 +1,24 @@
+{
+    "name": "clue/reactphp-csv",
+    "description": "Streaming CSV (Comma-Separated Values or Character-Separated Values) parser and encoder for ReactPHP",
+    "keywords": ["CSV", "comma-separated values", "character-separated values", "streaming", "ReactPHP"],
+    "homepage": "https://github.com/clue/reactphp-csv",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Christian Lück",
+            "email": "christian@lueck.tv"
+        }
+    ],
+    "autoload": {
+        "psr-4": { "Clue\\React\\Csv\\": "src/" }
+    },
+    "require": {
+        "php": ">=5.3",
+        "react/stream": "^1.0 || ^0.7 || ^0.6"
+    },
+    "require-dev": {
+        "react/event-loop": "^1.0 || ^0.5 || ^0.4 || ^0.3",
+        "phpunit/phpunit": "^6.0 || ^5.7 || ^4.8.35"
+    }
+}

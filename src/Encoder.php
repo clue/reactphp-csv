@@ -14,9 +14,9 @@ class Encoder extends EventEmitter implements WritableStreamInterface
     private $temp = false;
     private $closed = false;
 
-    private $delimiter = ',';
-    private $enclosure = '"';
-    private $escapeChar = '\\';
+    private $delimiter;
+    private $enclosure;
+    private $escapeChar;
 
     public function __construct(WritableStreamInterface $output, $delimiter = ',', $enclosure = '"', $escapeChar = '\\')
     {
@@ -48,7 +48,19 @@ class Encoder extends EventEmitter implements WritableStreamInterface
             return false;
         }
 
-        if (!is_array($data) || fputcsv($this->temp, $data, $this->delimiter, $this->enclosure, $this->escapeChar) === false) {
+        $written = false;
+        if (is_array($data)) {
+            // custom escape character requires PHP 5.5.4+ (see constructor check)
+            // @codeCoverageIgnoreStart
+            if ($this->escapeChar === '\\') {
+                $written = fputcsv($this->temp, $data, $this->delimiter, $this->enclosure);
+            } else {
+                $written = fputcsv($this->temp, $data, $this->delimiter, $this->enclosure, $this->escapeChar);
+            }
+            // @codeCoverageIgnoreEnd
+        }
+
+        if ($written === false) {
             $this->handleError(new \RuntimeException('Unable to encode CSV'));
             return false;
         }

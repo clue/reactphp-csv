@@ -60,6 +60,34 @@ class DecoderTest extends TestCase
         $this->input->emit('data', array("\"hello\"\n"));
     }
 
+    public function testEmitDataStringWithNewlineWillForward()
+    {
+        $this->decoder->on('data', $this->expectCallableOnceWith(array("hello" . "\n" . "world")));
+
+        $this->input->emit('data', array("\"hello\nworld\"\n"));
+    }
+
+    public function testEmitDataStringWithMultiNewlineWillForward()
+    {
+        $this->decoder->on('data', $this->expectCallableOnceWith(array("hello" . "\n\n" . "world")));
+
+        $this->input->emit('data', array("\"hello\n\nworld\"\n"));
+    }
+
+    public function testEmitDataStringEndsWithNewlineWillForward()
+    {
+        $this->decoder->on('data', $this->expectCallableOnceWith(array("hello" . "\n")));
+
+        $this->input->emit('data', array("\"hello\n\"\n"));
+    }
+
+    public function testEmitDataStringOnlyNewlineWillForward()
+    {
+        $this->decoder->on('data', $this->expectCallableOnceWith(array("\n")));
+
+        $this->input->emit('data', array("\"\n\"\n"));
+    }
+
     public function testEmitDataWithoutNewlineWillNotForward()
     {
         $this->decoder->on('data', $this->expectCallableNever());
@@ -90,6 +118,7 @@ class DecoderTest extends TestCase
         $this->decoder->on('error', $this->expectCallableOnce());
 
         $this->input->emit('data', array("\"hello\\\"test\n"));
+        $this->input->emit('end');
     }
 
     public function testEmitDataErrorInMultipleChunksWillForwardError()
@@ -99,6 +128,7 @@ class DecoderTest extends TestCase
 
         $this->input->emit('data', array("\"hello"));
         $this->input->emit('data', array("\\\"test\n"));
+        $this->input->emit('end');
     }
 
     public function testEmitDataWithExactBufferSizeWillForward()

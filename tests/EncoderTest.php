@@ -62,6 +62,17 @@ class EncoderTest extends TestCase
         $this->encoder->write(array('hello world'));
     }
 
+    public function testWriteArrayWithStringWithNewlineUsesEnclosing()
+    {
+        $this->output = $this->getMockBuilder('React\Stream\WritableStreamInterface')->getMock();
+        $this->output->expects($this->once())->method('isWritable')->willReturn(true);
+        $this->encoder = new Encoder($this->output);
+
+        $this->output->expects($this->once())->method('write')->with("\"hello\nworld\"\n");
+
+        $this->encoder->write(array("hello\nworld"));
+    }
+
     public function testWriteArrayWithSpecialStringUsesEnclosing()
     {
         $this->output = $this->getMockBuilder('React\Stream\WritableStreamInterface')->getMock();

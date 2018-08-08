@@ -64,14 +64,15 @@ Carol,40
 Dave,30
 ```
 
-CSV allows handling field values that contain spaces or the delimiting comma
-(think of URLs or user-provided descriptions) by enclosing them with quotes like
-this:
+CSV allows handling field values that contain spaces, the delimiting comma or
+even newline characters (think of URLs or user-provided descriptions) by
+enclosing them with quotes like this:
 
 ```
 name,comment
 Alice,"Yes, I like cheese"
-Bob,"Hello World!"
+Bob,"Hello
+World!"
 ```
 
 > Note that these more advanced parsing rules are often handled inconsistently

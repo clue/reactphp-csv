@@ -24,6 +24,7 @@ rows efficiently without having to load the whole file into memory at once.
 
 **Table of contents**
 
+* [CSV format](#csv-format)
 * [Usage](#usage)
   * [Decoder](#decoder)
   * [Encoder](#encoder)
@@ -31,6 +32,77 @@ rows efficiently without having to load the whole file into memory at once.
 * [Tests](#tests)
 * [License](#license)
 * [More](#more)
+
+## CSV format
+
+CSV (Comma-Separated Values or less commonly Character-Separated Values) is a
+very simple text-based format for storing a large number of (uniform) records,
+such as a list of user records or log entries.
+
+```
+Alice,30
+Bob,50
+Carol,40
+Dave,30
+```
+
+While this may look somewhat trivial, this simplicity comes at a price. CSV is
+limited to untyped, two-dimensional data, so there's no standard way of storing
+any nested structures or to differentiate a boolean value from a string or
+integer.
+
+CSV allows for optional field names. Whether field names are used is
+application-dependant, so this library makes no attempt at *guessing* whether
+the first line contains field names or field values. For many common use cases
+it's a good idea to include them like this:
+
+```
+name,age
+Alice,30
+Bob,50
+Carol,40
+Dave,30
+```
+
+CSV allows handling field values that contain spaces or the delimiting comma
+(think of URLs or user-provided descriptions) by enclosing them with quotes like
+this:
+
+```
+name,comment
+Alice,"Yes, I like cheese"
+Bob,"Hello World!"
+```
+
+> Note that these more advanced parsing rules are often handled inconsistently
+  by other applications. Nowadays, these parsing rules are defined as part of
+  [RFC 4180](https://tools.ietf.org/html/rfc4180), however many applications
+  starting using some CSV-variant long before this standard was defined.
+
+Some applications refer to CSV as Character-Separated Values, simply because
+using another delimiter (such as semicolon or tab) is a rather common approach
+to avoid the need to enclose common values in quotes. This is particularly
+common for European systems that use a comma as decimal separator.
+
+```
+name;comment
+Alice;Yes, I like cheese
+Bob;Turn 22,5 degree clockwise
+```
+
+CSV files are often limited to only ASCII characters for best interoperability.
+However, many legacy CSV files often use ISO 8859-1 encoding or some other
+variant. Newer CSV files are usually best saved as UTF-8 and may thus also
+contain special characters from the Unicode range. The text-encoding is usually
+application-dependant, so your best bet would be to convert to (or assume) UTF-8
+consistently.
+
+Despite its shortcomings CSV is widely used and this is unlikely to change any
+time soon. In particular, CSV is a very common export format for a lot of tools
+to interface with spreadsheet processors (such as Exel, Calc etc.). This means
+that CSV is often used for historial reasons and using CSV to store structured
+application data is usually not a good idea nowadays – but exporting to CSV for
+known applications is a very reasonable approach.
 
 ## Usage
 

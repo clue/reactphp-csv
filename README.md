@@ -105,6 +105,15 @@ that CSV is often used for historial reasons and using CSV to store structured
 application data is usually not a good idea nowadays – but exporting to CSV for
 known applications is a very reasonable approach.
 
+As an alternative, if you want to process structured data in a more modern
+JSON-based format, you may want to use [clue/reactphp-ndjson](https://github.com/clue/reactphp-ndjson)
+to process newline-delimited JSON (NDJSON) files (`.ndjson` file extension).
+
+```json
+{"name":"Alice","age":30,"comment":"Yes, I like cheese"}
+{"name":"Bob","age":50,"comment":"Hello\nWorld!"}
+```
+
 ## Usage
 
 ### Decoder
@@ -328,6 +337,10 @@ This project is released under the permissive [MIT license](LICENSE).
 
 * If you want to learn more about processing streams of data, refer to the documentation of
   the underlying [react/stream](https://github.com/reactphp/stream) component.
+
+* If you want to process structured data in a more modern JSON-based format,
+  you may want to use [clue/reactphp-ndjson](https://github.com/clue/reactphp-ndjson)
+  to process newline-delimited JSON (NDJSON) files (`.ndjson` file extension).
 
 * If you want to process compressed CSV files (`.csv.gz` file extension)
   you may want to use [clue/reactphp-zlib](https://github.com/clue/reactphp-zlib)

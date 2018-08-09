@@ -13,7 +13,6 @@ use React\Stream\Util;
 class Decoder extends EventEmitter implements ReadableStreamInterface
 {
     private $input;
-    private $temp = false;
 
     private $delimiter;
     private $enclosure;
@@ -21,6 +20,7 @@ class Decoder extends EventEmitter implements ReadableStreamInterface
     private $maxlength;
 
     private $buffer = '';
+    private $offset = 0;
     private $closed = false;
 
     public function __construct(ReadableStreamInterface $input, $delimiter = ',', $enclosure = '"', $escapeChar = '\\', $maxlength = 65536)
@@ -34,8 +34,6 @@ class Decoder extends EventEmitter implements ReadableStreamInterface
         if (!$input->isReadable()) {
             return $this->close();
         }
-
-        $this->temp = fopen('php://memory', 'r+');
 
         $this->input->on('data', array($this, 'handleData'));
         $this->input->on('end', array($this, 'handleEnd'));
@@ -56,12 +54,6 @@ class Decoder extends EventEmitter implements ReadableStreamInterface
 
         $this->closed = true;
         $this->buffer = '';
-
-        if ($this->temp !== false) {
-            fclose($this->temp);
-            $this->temp = false;
-        }
-
         $this->input->close();
 
         $this->emit('close');
@@ -91,20 +83,33 @@ class Decoder extends EventEmitter implements ReadableStreamInterface
         $this->buffer .= $data;
 
         // keep parsing while a newline has been found
-        while (($newline = strpos($this->buffer, "\n")) !== false && $newline <= $this->maxlength) {
-            // read data up until newline and remove from buffer
-            ftruncate($this->temp, 0);
-            fwrite($this->temp, (string)substr($this->buffer, 0, $newline));
-            rewind($this->temp);
-            $this->buffer = (string)substr($this->buffer, $newline + 1);
+        while (($newline = \strpos($this->buffer, "\n", $this->offset)) !== false && $newline <= $this->maxlength) {
+            // read data up until newline and try to parse
+            $data = \str_getcsv(
+                \substr($this->buffer, 0, $newline + 1),
+                $this->delimiter,
+                $this->enclosure,
+                $this->escapeChar
+            );
 
-            $data = fgetcsv($this->temp, 0, $this->delimiter, $this->enclosure, $this->escapeChar);
-
-            // abort stream if decoding failed
-            if ($data === false) {
+            // unable to decode? abort
+            if ($data === false || \end($data) === null) {
                 $this->handleError(new \RuntimeException('Unable to decode CSV'));
                 return;
             }
+
+            // the last parsed cell value ends with a newline and the buffer does not end with end quote?
+            // this looks like a multiline value, so only remember offset and wait for next newline
+            $last = \substr(\end($data), -1);
+            \reset($data);
+            if ($last === "\n" && ($newline === 1 || $this->buffer[$newline - 1] !== $this->enclosure)) {
+                $this->offset = $newline + 1;
+                continue;
+            }
+
+            // parsing successful => remove from buffer and emit
+            $this->buffer = (string)\substr($this->buffer, $newline + 1);
+            $this->offset = 0;
 
             $this->emit('data', array($data));
         }
@@ -119,6 +124,10 @@ class Decoder extends EventEmitter implements ReadableStreamInterface
     {
         if ($this->buffer !== '') {
             $this->handleData("\n");
+        }
+
+        if ($this->buffer !== '') {
+            $this->handleError(new \RuntimeException('Unable to decode CSV'));
         }
 
         if (!$this->closed) {

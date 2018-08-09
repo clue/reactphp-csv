@@ -15,8 +15,10 @@ $in = new ReadableResourceStream(STDIN, $loop);
 $out = new WritableResourceStream(STDOUT, $loop);
 $info = new WritableResourceStream(STDERR, $loop);
 
-$decoder = new Decoder($in);
-$encoder = new Encoder($out);
+$delimiter = isset($argv[1]) ? $argv[1] : ',';
+
+$decoder = new Decoder($in, $delimiter);
+$encoder = new Encoder($out, $delimiter);
 $decoder->pipe($encoder);
 
 $decoder->on('error', function (Exception $e) use ($info, &$exit) {

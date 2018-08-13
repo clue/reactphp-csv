@@ -27,6 +27,7 @@ rows efficiently without having to load the whole file into memory at once.
 * [CSV format](#csv-format)
 * [Usage](#usage)
   * [Decoder](#decoder)
+  * [AssocDecoder](#assocdecoder)
   * [Encoder](#encoder)
 * [Install](#install)
 * [Tests](#tests)
@@ -220,6 +221,54 @@ $stream->pipe($logger);
 
 For more details, see ReactPHP's
 [`ReadableStreamInterface`](https://github.com/reactphp/stream#readablestreaminterface).
+
+### AssocDecoder
+
+The `AssocDecoder` (parser) class can be used to make sure you only get back
+complete, valid CSV elements when reading from a stream.
+It wraps a given
+[`ReadableStreamInterface`](https://github.com/reactphp/stream#readablestreaminterface)
+and exposes its data through the same interface, but emits the CSV elements
+as parsed assoc arrays instead of just chunks of strings:
+
+```
+name,id
+test,1
+"hello world",2
+```
+```php
+$stdin = new ReadableResourceStream(STDIN, $loop);
+
+$stream = new Decoder($stdin);
+
+$stream->on('data', function ($data) {
+    // data is a parsed element from the CSV stream
+    // line 1: $data = array('name' => 'test', 'id' => '1');
+    // line 2: $data = array('name' => 'hello world', 'id' => '2');
+    var_dump($data);
+});
+```
+
+Whether field names are used is application-dependant, so this library makes no
+attempt at *guessing* whether the first line contains field names or field
+values. For many common use cases it's a good idea to include them and
+explicitly use this class instead of the underlying [`Decoder`](#decoder).
+
+In fact, it uses the [`Decoder`](#decoder) class internally. The only difference
+is that this class requires the first line to include the name of headers and
+will use this as keys for all following row data which will be emitted as
+assoc arrays.
+
+This implies that the input stream MUST start with one row of header names and
+MUST use the same number of columns for all records. If the input stream does
+not emit any data, if any row does not contain the same number of columns,
+if the input stream does not represent a valid CSV stream or if the input stream
+emits an `error` event, this decoder will emit an appropriate `error` event and
+close the input stream.
+
+This class otherwise accepts the same arguments and follows the exact same
+behavior of the underlying [`Decoder`](#decoder) class. For more details, see
+the [`Decoder`](#decoder) class.
 
 ### Encoder
 

@@ -23,6 +23,13 @@ class Decoder extends EventEmitter implements ReadableStreamInterface
     private $offset = 0;
     private $closed = false;
 
+    /**
+     * @param ReadableStreamInterface $input
+     * @param string                  $delimiter
+     * @param string                  $enclosure
+     * @param string                  $escapeChar
+     * @param int                     $maxlength
+     */
     public function __construct(ReadableStreamInterface $input, $delimiter = ',', $enclosure = '"', $escapeChar = '\\', $maxlength = 65536)
     {
         $this->input = $input;
@@ -32,7 +39,8 @@ class Decoder extends EventEmitter implements ReadableStreamInterface
         $this->maxlength = $maxlength;
 
         if (!$input->isReadable()) {
-            return $this->close();
+            $this->close();
+            return;
         }
 
         $this->input->on('data', array($this, 'handleData'));

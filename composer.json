@@ -1,6 +1,6 @@
 {
     "name": "clue/reactphp-csv",
-    "description": "Streaming CSV (Comma-Separated Values or Character-Separated Values) parser and encoder for ReactPHP",
+    "description": "Streaming CSV (Comma-Separated Values or Character-Separated Values) parser and encoder for ReactPHP.",
     "keywords": ["CSV", "comma-separated values", "character-separated values", "streaming", "ReactPHP"],
     "homepage": "https://github.com/clue/reactphp-csv",
     "license": "MIT",

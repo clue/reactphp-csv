@@ -20,7 +20,7 @@ rows efficiently without having to load the whole file into memory at once.
   and does not get in your way.
   Builds on top of well-tested components and well-established concepts instead of reinventing the wheel.
 * **Good test coverage** -
-  Comes with an [automated tests suite](#tests) and is regularly tested in the *real world*
+  Comes with an [automated tests suite](#tests) and is regularly tested in the *real world*.
 
 **Table of contents**
 
@@ -79,12 +79,12 @@ World!"
 > Note that these more advanced parsing rules are often handled inconsistently
   by other applications. Nowadays, these parsing rules are defined as part of
   [RFC 4180](https://tools.ietf.org/html/rfc4180), however many applications
-  starting using some CSV-variant long before this standard was defined.
+  started using some CSV-variant long before this standard was defined.
 
 Some applications refer to CSV as Character-Separated Values, simply because
 using another delimiter (such as semicolon or tab) is a rather common approach
 to avoid the need to enclose common values in quotes. This is particularly
-common for European systems that use a comma as decimal separator.
+common for systems in Europe (and elsewhere) that use a comma as decimal separator.
 
 ```
 name;comment
@@ -349,11 +349,14 @@ For more details, see ReactPHP's
 The recommended way to install this library is [through Composer](https://getcomposer.org).
 [New to Composer?](https://getcomposer.org/doc/00-intro.md)
 
+This project follows [SemVer](https://semver.org/).
 This will install the latest supported version:
 
 ```bash
-$ composer require clue/reactphp-csv:dev-master
+$ composer require clue/reactphp-csv:^1.0
 ```
+
+See also the [CHANGELOG](CHANGELOG.md) for details about version upgrades.
 
 This project aims to run on any platform and thus does not require any PHP
 extensions and supports running on legacy PHP 5.3 through current PHP 7+ and

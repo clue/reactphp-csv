@@ -1,10 +1,12 @@
 <?php
 
+// $ php examples/02-validate.php < examples/users.csv
+
+use Clue\React\Csv\Decoder;
+use Clue\React\Csv\Encoder;
 use React\EventLoop\Factory;
 use React\Stream\ReadableResourceStream;
 use React\Stream\WritableResourceStream;
-use Clue\React\Csv\Decoder;
-use Clue\React\Csv\Encoder;
 
 require __DIR__ . '/../vendor/autoload.php';
 

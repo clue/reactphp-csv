@@ -1,9 +1,11 @@
 <?php
 
+// $ php examples/11-csv2ndjson.php < examples/users.csv > examples/users.ndjson
+
+use Clue\React\Csv\AssocDecoder;
 use React\EventLoop\Factory;
 use React\Stream\ReadableResourceStream;
 use React\Stream\WritableResourceStream;
-use Clue\React\Csv\Decoder;
 use React\Stream\ThroughStream;
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -17,19 +19,17 @@ $info = new WritableResourceStream(STDERR, $loop);
 
 $delimiter = isset($argv[1]) ? $argv[1] : ',';
 
-$decoder = new Decoder($in, $delimiter);
+$decoder = new AssocDecoder($in, $delimiter);
 
-$headers = array();
-$encoder = new ThroughStream(function ($data) use (&$headers) {
-    return json_encode(array_combine($headers, $data), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . "\n";
-});
-$encoder->pipe($out);
+$encoder = new ThroughStream(function ($data) {
+    $data = \array_filter($data, function ($one) {
+        return ($one !== '');
+    });
 
-// first row from decoder will be used as header values, then start piping to encoder
-$decoder->once('data', function ($data) use (&$headers, $decoder, $encoder) {
-    $headers = $data;
-    $decoder->pipe($encoder);
+    return \json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . "\n";
 });
+
+$decoder->pipe($encoder)->pipe($out);
 
 $decoder->on('error', function (Exception $e) use ($info, &$exit) {
     $info->write('ERROR: ' . $e->getMessage() . PHP_EOL);

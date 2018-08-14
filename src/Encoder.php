@@ -18,6 +18,13 @@ class Encoder extends EventEmitter implements WritableStreamInterface
     private $enclosure;
     private $escapeChar;
 
+    /**
+     * @param WritableStreamInterface $output
+     * @param string                  $delimiter
+     * @param string                  $enclosure
+     * @param string                  $escapeChar
+     * @throws \BadMethodCallException
+     */
     public function __construct(WritableStreamInterface $output, $delimiter = ',', $enclosure = '"', $escapeChar = '\\')
     {
         // @codeCoverageIgnoreStart
@@ -32,7 +39,8 @@ class Encoder extends EventEmitter implements WritableStreamInterface
         $this->escapeChar = $escapeChar;
 
         if (!$output->isWritable()) {
-            return $this->close();
+            $this->close();
+            return;
         }
 
         $this->temp = fopen('php://memory', 'r+');

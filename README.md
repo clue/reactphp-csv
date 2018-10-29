@@ -99,12 +99,12 @@ contain special characters from the Unicode range. The text-encoding is usually
 application-dependant, so your best bet would be to convert to (or assume) UTF-8
 consistently.
 
-Despite its shortcomings CSV is widely used and this is unlikely to change any
+Despite its shortcomings, CSV is widely used and this is unlikely to change any
 time soon. In particular, CSV is a very common export format for a lot of tools
 to interface with spreadsheet processors (such as Exel, Calc etc.). This means
-that CSV is often used for historial reasons and using CSV to store structured
+that CSV is often used for historical reasons and using CSV to store structured
 application data is usually not a good idea nowadays – but exporting to CSV for
-known applications is a very reasonable approach.
+known applications continues to be a very reasonable approach.
 
 As an alternative, if you want to process structured data in a more modern
 JSON-based format, you may want to use [clue/reactphp-ndjson](https://github.com/clue/reactphp-ndjson)

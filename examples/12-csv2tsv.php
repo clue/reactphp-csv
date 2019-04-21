@@ -1,9 +1,9 @@
 <?php
 
-// $ php examples/11-csv2ndjson.php < examples/users.csv > examples/users.ndjson
-// see also https://github.com/clue/reactphp-ndjson
+// $ php examples/12-csv2tsv.php < examples/users.csv > examples/users.tsv
+// see also https://github.com/clue/reactphp-tsv
 
-use Clue\React\Csv\AssocDecoder;
+use Clue\React\Csv\Decoder;
 use React\EventLoop\Factory;
 use React\Stream\ReadableResourceStream;
 use React\Stream\WritableResourceStream;
@@ -20,14 +20,14 @@ $info = new WritableResourceStream(STDERR, $loop);
 
 $delimiter = isset($argv[1]) ? $argv[1] : ',';
 
-$decoder = new AssocDecoder($in, $delimiter);
+$decoder = new Decoder($in, $delimiter);
 
 $encoder = new ThroughStream(function ($data) {
-    $data = \array_filter($data, function ($one) {
-        return ($one !== '');
-    });
+    $data = \array_map(function ($value) {
+        return \addcslashes($value, "\0..\37");
+    }, $data);
 
-    return \json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . "\n";
+    return \implode("\t", $data) . "\n";
 });
 
 $decoder->pipe($encoder)->pipe($out);
@@ -37,8 +37,17 @@ $decoder->on('error', function (Exception $e) use ($info, &$exit) {
     $exit = 1;
 });
 
+// TSV files MUST include a header line, so complain if CSV input ends without a single line
+$decoder->on('end', $empty = function () use ($info, &$exit) {
+    $info->write('ERROR: Empty CSV input' . PHP_EOL);
+    $exit = 1;
+});
+$decoder->once('data', function () use ($decoder, $empty) {
+    $decoder->removeListener('end', $empty);
+});
+
 $info->write('You can pipe/write a valid CSV stream to STDIN' . PHP_EOL);
-$info->write('Valid NDJSON (Newline-Delimited JSON) will be forwarded to STDOUT' . PHP_EOL);
+$info->write('Valid TSV (Tab-Separated Values) will be forwarded to STDOUT' . PHP_EOL);
 $info->write('Invalid CSV will raise an error on STDERR and exit with code 1' . PHP_EOL);
 
 $loop->run();

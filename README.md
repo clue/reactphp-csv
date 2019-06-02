@@ -239,7 +239,7 @@ test,1
 ```php
 $stdin = new ReadableResourceStream(STDIN, $loop);
 
-$stream = new Decoder($stdin);
+$stream = new AssocDecoder($stdin);
 
 $stream->on('data', function ($data) {
     // data is a parsed element from the CSV stream

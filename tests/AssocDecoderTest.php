@@ -1,5 +1,7 @@
 <?php
 
+namespace Clue\Tests\React\Csv;
+
 use Clue\React\Csv\AssocDecoder;
 use React\Stream\ReadableResourceStream;
 

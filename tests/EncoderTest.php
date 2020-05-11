@@ -1,5 +1,7 @@
 <?php
 
+namespace Clue\Tests\React\Csv;
+
 use React\Stream\WritableResourceStream;
 use Clue\React\Csv\Encoder;
 

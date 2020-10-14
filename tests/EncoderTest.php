@@ -10,7 +10,10 @@ class EncoderTest extends TestCase
     private $output;
     private $encoder;
 
-    public function setUp()
+    /**
+     * @before
+     */
+    public function setUpEncoder()
     {
         $stream = fopen('php://temp', 'r+');
         $loop = $this->getMockBuilder('React\EventLoop\LoopInterface')->getMock();

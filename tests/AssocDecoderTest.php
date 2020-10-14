@@ -10,7 +10,10 @@ class AssocDecoderTest extends TestCase
     private $input;
     private $decoder;
 
-    public function setUp()
+    /**
+     * @before
+     */
+    public function setUpDecoder()
     {
         $stream = fopen('php://temp', 'r');
         $loop = $this->getMockBuilder('React\EventLoop\LoopInterface')->getMock();

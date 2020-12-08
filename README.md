@@ -1,4 +1,6 @@
-# clue/reactphp-csv [![Build Status](https://travis-ci.org/clue/reactphp-csv.svg?branch=master)](https://travis-ci.org/clue/reactphp-csv)
+# clue/reactphp-csv
+
+[![CI status](https://github.com/clue/reactphp-csv/workflows/CI/badge.svg)](https://github.com/clue/reactphp-csv/actions)
 
 Streaming CSV (Comma-Separated Values or Character-Separated Values) parser and encoder for [ReactPHP](https://reactphp.org/).
 

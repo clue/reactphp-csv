@@ -26,6 +26,7 @@ rows efficiently without having to load the whole file into memory at once.
 
 **Table of contents**
 
+* [Support us](#support-us)
 * [CSV format](#csv-format)
 * [Usage](#usage)
   * [Decoder](#decoder)
@@ -35,6 +36,16 @@ rows efficiently without having to load the whole file into memory at once.
 * [Tests](#tests)
 * [License](#license)
 * [More](#more)
+
+## Support us
+
+We invest a lot of time developing, maintaining and updating our awesome
+open-source projects. You can help us sustain this high-quality of our work by
+[becoming a sponsor on GitHub](https://github.com/sponsors/clue). Sponsors get
+numerous benefits in return, see our [sponsoring page](https://github.com/sponsors/clue)
+for details.
+
+Let's take these projects to the next level together! 🚀
 
 ## CSV format
 
@@ -295,7 +306,7 @@ test,1,24
 ```
 
 The `Encoder` supports the same optional parameters as the underlying
-[`fputcsv()`](http://php.net/fputcsv) function.
+[`fputcsv()`](https://www.php.net/fputcsv) function.
 This means that, by default, CSV fields will be delimited by a comma (`,`), will
 use a quote enclosure character (`"`) and a backslash escape character (`\`).
 This behavior can be controlled through the optional constructor parameters:
@@ -355,7 +366,7 @@ This project follows [SemVer](https://semver.org/).
 This will install the latest supported version:
 
 ```bash
-$ composer require clue/reactphp-csv:^1.0
+$ composer require clue/reactphp-csv:^1.1
 ```
 
 See also the [CHANGELOG](CHANGELOG.md) for details about version upgrades.

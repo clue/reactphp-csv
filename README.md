@@ -128,6 +128,16 @@ to process newline-delimited JSON (NDJSON) files (`.ndjson` file extension).
 {"name":"Bob","age":50,"comment":"Hello\nWorld!"}
 ```
 
+As another alternative, if you want to use a CSV-variant that avoids some of its
+shortcomings (and is somewhat faster!), you may want to use [clue/reactphp-tsv](https://github.com/clue/reactphp-tsv)
+to process Tab-Separated-Values (TSV) files (`.tsv` file extension).
+
+```tsv
+name	age	comment
+Alice	30	Yes, I like cheese
+Bob	50	Hello world!
+```
+
 ## Usage
 
 ### Decoder
@@ -406,6 +416,10 @@ This project is released under the permissive [MIT license](LICENSE).
 * If you want to process structured data in a more modern JSON-based format,
   you may want to use [clue/reactphp-ndjson](https://github.com/clue/reactphp-ndjson)
   to process newline-delimited JSON (NDJSON) files (`.ndjson` file extension).
+
+* If you want to process a slightly simpler text-based tabular data format,
+  you may want to use [clue/reactphp-tsv](https://github.com/clue/reactphp-tsv)
+  to process Tab-Separated-Values (TSV) files (`.tsv` file extension).
 
 * If you want to process compressed CSV files (`.csv.gz` file extension)
   you may want to use [clue/reactphp-zlib](https://github.com/clue/reactphp-zlib)

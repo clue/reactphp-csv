@@ -155,7 +155,7 @@ test,1,24
 "hello world",2,48
 ```
 ```php
-$stdin = new ReadableResourceStream(STDIN, $loop);
+$stdin = new ReadableResourceStream(STDIN);
 
 $stream = new Decoder($stdin);
 
@@ -261,7 +261,7 @@ test,1
 "hello world",2
 ```
 ```php
-$stdin = new ReadableResourceStream(STDIN, $loop);
+$stdin = new ReadableResourceStream(STDIN);
 
 $stream = new AssocDecoder($stdin);
 
@@ -304,7 +304,7 @@ and accepts its data through the same interface, but handles any data as complet
 CSV elements instead of just chunks of strings:
 
 ```php
-$stdout = new WritableResourceStream(STDOUT, $loop);
+$stdout = new WritableResourceStream(STDOUT);
 
 $stream = new Encoder($stdout);
 

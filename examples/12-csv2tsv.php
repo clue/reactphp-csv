@@ -4,19 +4,17 @@
 // see also https://github.com/clue/reactphp-tsv
 
 use Clue\React\Csv\Decoder;
-use React\EventLoop\Factory;
+use React\EventLoop\Loop;
 use React\Stream\ReadableResourceStream;
 use React\Stream\WritableResourceStream;
 use React\Stream\ThroughStream;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$loop = Factory::create();
-
 $exit = 0;
-$in = new ReadableResourceStream(STDIN, $loop);
-$out = new WritableResourceStream(STDOUT, $loop);
-$info = new WritableResourceStream(STDERR, $loop);
+$in = new ReadableResourceStream(STDIN);
+$out = new WritableResourceStream(STDOUT);
+$info = new WritableResourceStream(STDERR);
 
 $delimiter = isset($argv[1]) ? $argv[1] : ',';
 
@@ -50,6 +48,6 @@ $info->write('You can pipe/write a valid CSV stream to STDIN' . PHP_EOL);
 $info->write('Valid TSV (Tab-Separated Values) will be forwarded to STDOUT' . PHP_EOL);
 $info->write('Invalid CSV will raise an error on STDERR and exit with code 1' . PHP_EOL);
 
-$loop->run();
+Loop::run();
 
 exit($exit);

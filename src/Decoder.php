@@ -110,7 +110,8 @@ class Decoder extends EventEmitter implements ReadableStreamInterface
             // this looks like a multiline value, so only remember offset and wait for next newline
             $last = \substr(\end($data), -1);
             \reset($data);
-            if ($last === "\n" && ($newline === 1 || $this->buffer[$newline - 1] !== $this->enclosure)) {
+            $edgeCase = \substr($this->buffer, $newline - 2, 3);
+            if ($last === "\n" && ($newline === 1 || $this->buffer[$newline - 1] !== $this->enclosure || $edgeCase === $this->delimiter . $this->enclosure . "\n")) {
                 $this->offset = $newline + 1;
                 continue;
             }

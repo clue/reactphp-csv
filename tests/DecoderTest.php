@@ -86,6 +86,13 @@ class DecoderTest extends TestCase
         $this->input->emit('data', array("\"hello\n\"\n"));
     }
 
+    public function testEmitDataStringWithNewLineAsStartOfFieldWillForward()
+    {
+        $this->decoder->on('data', $this->expectCallableOnceWith(array("one", "\ntwo\n", "three")));
+
+        $this->input->emit('data', array("one,\"\ntwo\n\",three\n"));
+    }
+
     public function testEmitDataStringOnlyNewlineWillForward()
     {
         $this->decoder->on('data', $this->expectCallableOnceWith(array("\n")));

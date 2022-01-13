@@ -17,26 +17,31 @@ class Encoder extends EventEmitter implements WritableStreamInterface
     private $delimiter;
     private $enclosure;
     private $escapeChar;
+    private $eol;
 
     /**
      * @param WritableStreamInterface $output
      * @param string                  $delimiter
      * @param string                  $enclosure
      * @param string                  $escapeChar
+     * @param string                  $eol
      * @throws \BadMethodCallException
      */
-    public function __construct(WritableStreamInterface $output, $delimiter = ',', $enclosure = '"', $escapeChar = '\\')
+    public function __construct(WritableStreamInterface $output, $delimiter = ',', $enclosure = '"', $escapeChar = '\\', $eol = "\n")
     {
-        // @codeCoverageIgnoreStart
         if ($escapeChar !== '\\' && PHP_VERSION_ID < 50504) {
-            throw new \BadMethodCallException('Custom escape character only supported on PHP 5.5.4+');
+            throw new \BadMethodCallException('Custom escape character only supported on PHP 5.5.4+'); // @codeCoverageIgnore
         }
-        // @codeCoverageIgnoreEnd
+
+        if ($eol !== "\n" && PHP_VERSION_ID < 80100) {
+            throw new \BadMethodCallException('Custom EOL character only supported on PHP 8.1+'); // @codeCoverageIgnore
+        }
 
         $this->output = $output;
         $this->delimiter = $delimiter;
         $this->enclosure = $enclosure;
         $this->escapeChar = $escapeChar;
+        $this->eol = $eol;
 
         if (!$output->isWritable()) {
             $this->close();
@@ -58,12 +63,14 @@ class Encoder extends EventEmitter implements WritableStreamInterface
 
         $written = false;
         if (is_array($data)) {
-            // custom escape character requires PHP 5.5.4+ (see constructor check)
+            // custom escape character requires PHP 5.5.4+, custom EOL requires PHP 8.1+ (see constructor check)
             // @codeCoverageIgnoreStart
-            if ($this->escapeChar === '\\') {
+            if ($this->escapeChar === '\\' && $this->eol === "\n") {
                 $written = fputcsv($this->temp, $data, $this->delimiter, $this->enclosure);
-            } else {
+            } elseif ($this->eol === "\n") {
                 $written = fputcsv($this->temp, $data, $this->delimiter, $this->enclosure, $this->escapeChar);
+            } else {
+                $written = fputcsv($this->temp, $data, $this->delimiter, $this->enclosure, $this->escapeChar, $this->eol);
             }
             // @codeCoverageIgnoreEnd
         }

@@ -317,9 +317,10 @@ test,1,24
 ```
 
 The `Encoder` supports the same optional parameters as the underlying
-[`fputcsv()`](https://www.php.net/fputcsv) function.
+[`fputcsv()`](https://www.php.net/manual/en/function.fputcsv.php) function.
 This means that, by default, CSV fields will be delimited by a comma (`,`), will
-use a quote enclosure character (`"`) and a backslash escape character (`\`).
+use a quote enclosure character (`"`), a backslash escape character (`\`), and
+a Unix-style EOL (`\n` or `LF`).
 This behavior can be controlled through the optional constructor parameters:
 
 ```php
@@ -385,7 +386,7 @@ See also the [CHANGELOG](CHANGELOG.md) for details about version upgrades.
 This project aims to run on any platform and thus does not require any PHP
 extensions and supports running on legacy PHP 5.3 through current PHP 8+ and
 HHVM.
-It's *highly recommended to use PHP 7+* for this project.
+It's *highly recommended to use the latest supported PHP version PHP 7+* for this project.
 
 ## Tests
 

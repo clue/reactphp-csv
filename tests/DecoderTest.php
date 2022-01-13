@@ -160,6 +160,14 @@ class DecoderTest extends TestCase
         $this->input->emit('data', array("hello\n"));
     }
 
+    public function testEmitDataWithInvalidTypeWillForwardErrorWithUnexpectedValueException()
+    {
+        $this->decoder->on('data', $this->expectCallableNever());
+        $this->decoder->on('error', $this->expectCallableOnceWith($this->isInstanceOf('UnexpectedValueException')));
+
+        $this->input->emit('data', array(false));
+    }
+
     public function testEmitEndWillForwardEnd()
     {
         $this->decoder->on('data', $this->expectCallableNever());

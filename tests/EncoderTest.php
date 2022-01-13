@@ -44,6 +44,17 @@ class EncoderTest extends TestCase
         $this->encoder->write(array('hello', 'world'));
     }
 
+    public function testWriteArrayWithCustomEolForWindows()
+    {
+        $this->output = $this->getMockBuilder('React\Stream\WritableStreamInterface')->getMock();
+        $this->output->expects($this->once())->method('isWritable')->willReturn(true);
+        $this->encoder = new Encoder($this->output, ',', '"', '\\', "\r\n");
+
+        $this->output->expects($this->once())->method('write')->with("hello,world\r\n");
+
+        $this->encoder->write(array('hello', 'world'));
+    }
+
     public function testWriteArrayTwiceWillSeparateWithNewlineAfterEachWrite()
     {
         $this->output = $this->getMockBuilder('React\Stream\WritableStreamInterface')->getMock();

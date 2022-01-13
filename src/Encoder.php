@@ -33,10 +33,6 @@ class Encoder extends EventEmitter implements WritableStreamInterface
             throw new \BadMethodCallException('Custom escape character only supported on PHP 5.5.4+'); // @codeCoverageIgnore
         }
 
-        if ($eol !== "\n" && PHP_VERSION_ID < 80100) {
-            throw new \BadMethodCallException('Custom EOL character only supported on PHP 8.1+'); // @codeCoverageIgnore
-        }
-
         $this->output = $output;
         $this->delimiter = $delimiter;
         $this->enclosure = $enclosure;
@@ -63,14 +59,14 @@ class Encoder extends EventEmitter implements WritableStreamInterface
 
         $written = false;
         if (is_array($data)) {
-            // custom escape character requires PHP 5.5.4+, custom EOL requires PHP 8.1+ (see constructor check)
+            // custom EOL requires PHP 8.1+, custom escape character requires PHP 5.5.4+ (see constructor check)
             // @codeCoverageIgnoreStart
-            if ($this->escapeChar === '\\' && $this->eol === "\n") {
-                $written = fputcsv($this->temp, $data, $this->delimiter, $this->enclosure);
-            } elseif ($this->eol === "\n") {
+            if (\PHP_VERSION_ID >= 80100) {
+                $written = fputcsv($this->temp, $data, $this->delimiter, $this->enclosure, $this->escapeChar, $this->eol);
+            } elseif (\PHP_VERSION_ID >= 50504) {
                 $written = fputcsv($this->temp, $data, $this->delimiter, $this->enclosure, $this->escapeChar);
             } else {
-                $written = fputcsv($this->temp, $data, $this->delimiter, $this->enclosure, $this->escapeChar, $this->eol);
+                $written = fputcsv($this->temp, $data, $this->delimiter, $this->enclosure);
             }
             // @codeCoverageIgnoreEnd
         }
@@ -83,6 +79,11 @@ class Encoder extends EventEmitter implements WritableStreamInterface
         rewind($this->temp);
         $data = stream_get_contents($this->temp);
         ftruncate($this->temp, 0);
+
+        // manually replace custom EOL on PHP < 8.1
+        if (\PHP_VERSION_ID < 80100 && $this->eol !== "\n") {
+            $data = \substr($data, 0, -1) . $this->eol;
+        }
 
         return $this->output->write($data);
     }

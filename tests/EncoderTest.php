@@ -44,9 +44,6 @@ class EncoderTest extends TestCase
         $this->encoder->write(array('hello', 'world'));
     }
 
-    /**
-     * @requires PHP 8.1
-     */
     public function testWriteArrayWithCustomEolForWindows()
     {
         $this->output = $this->getMockBuilder('React\Stream\WritableStreamInterface')->getMock();

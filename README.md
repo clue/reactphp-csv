@@ -157,10 +157,10 @@ test,1,24
 ```php
 $stdin = new ReadableResourceStream(STDIN);
 
-$stream = new Decoder($stdin);
+$csv = new Decoder($stdin);
 
-$stream->on('data', function ($data) {
-    // data is a parsed element from the CSV stream
+$csv->on('data', function ($data) {
+    // $data is a parsed element from the CSV stream
     // line 1: $data = array('test', '1', '24');
     // line 2: $data = array('hello world', '2', '48');
     var_dump($data);
@@ -179,9 +179,9 @@ use a quote enclosure character (`"`) and a backslash escape character (`\`).
 This behavior can be controlled through the optional constructor parameters:
 
 ```php
-$stream = new Decoder($stdin, ';');
+$csv = new Decoder($stdin, ';');
 
-$stream->on('data', function ($data) {
+$csv->on('data', function ($data) {
     // CSV fields will now be delimited by semicolon
 });
 ```
@@ -193,7 +193,7 @@ unreasonably long lines. It accepts an additional argument if you want to change
 this from the default of 64 KiB:
 
 ```php
-$stream = new Decoder($stdin, ',', '"', '\\', 64 * 1024);
+$csv = new Decoder($stdin, ',', '"', '\\', 64 * 1024);
 ```
 
 If the underlying stream emits an `error` event or the plain stream contains
@@ -201,7 +201,7 @@ any data that does not represent a valid CSV stream,
 it will emit an `error` event and then `close` the input stream:
 
 ```php
-$stream->on('error', function (Exception $error) {
+$csv->on('error', function (Exception $error) {
     // an error occured, stream will close next
 });
 ```
@@ -212,7 +212,7 @@ followed by an `end` event on success or an `error` event for
 incomplete/invalid CSV data as above:
 
 ```php
-$stream->on('end', function () {
+$csv->on('end', function () {
     // stream successfully ended, stream will close next
 });
 ```
@@ -221,7 +221,7 @@ If either the underlying stream or the `Decoder` is closed, it will forward
 the `close` event:
 
 ```php
-$stream->on('close', function () {
+$csv->on('close', function () {
     // stream closed
     // possibly after an "end" event or due to an "error" event
 });
@@ -231,7 +231,7 @@ The `close(): void` method can be used to explicitly close the `Decoder` and
 its underlying stream:
 
 ```php
-$stream->close();
+$csv->close();
 ```
 
 The `pipe(WritableStreamInterface $dest, array $options = array(): WritableStreamInterface`
@@ -240,7 +240,7 @@ Please note that the `Decoder` emits decoded/parsed data events, while many
 (most?) writable streams expect only data chunks:
 
 ```php
-$stream->pipe($logger);
+$csv->pipe($logger);
 ```
 
 For more details, see ReactPHP's
@@ -263,9 +263,9 @@ test,1
 ```php
 $stdin = new ReadableResourceStream(STDIN);
 
-$stream = new AssocDecoder($stdin);
+$csv = new AssocDecoder($stdin);
 
-$stream->on('data', function ($data) {
+$csv->on('data', function ($data) {
     // $data is a parsed element from the CSV stream
     // line 1: $data = array('name' => 'test', 'id' => '1');
     // line 2: $data = array('name' => 'hello world', 'id' => '2');
@@ -285,7 +285,7 @@ assoc arrays. After receiving the name of headers, this class will always emit
 a `headers` event with a list of header names.
 
 ```php
-$stream->on('headers', function (array $headers) {
+$csv->on('headers', function (array $headers) {
     // header line: $headers = array('name', 'id');
     var_dump($headers);
 });
@@ -314,10 +314,10 @@ CSV elements instead of just chunks of strings:
 ```php
 $stdout = new WritableResourceStream(STDOUT);
 
-$stream = new Encoder($stdout);
+$csv = new Encoder($stdout);
 
-$stream->write(array('test', true, 24));
-$stream->write(array('hello world', 2, 48));
+$csv->write(array('test', true, 24));
+$csv->write(array('hello world', 2, 48));
 ```
 ```
 test,1,24
@@ -332,9 +332,9 @@ a Unix-style EOL (`\n` or `LF`).
 This behavior can be controlled through the optional constructor parameters:
 
 ```php
-$stream = new Encoder($stdout, ';');
+$csv = new Encoder($stdout, ';');
 
-$stream->write(array('hello', 'world'));
+$csv->write(array('hello', 'world'));
 ```
 ```
 hello;world
@@ -345,7 +345,7 @@ any data that can not be represented as a valid CSV stream,
 it will emit an `error` event and then `close` the input stream:
 
 ```php
-$stream->on('error', function (Exception $error) {
+$csv->on('error', function (Exception $error) {
     // an error occured, stream will close next
 });
 ```
@@ -354,7 +354,7 @@ If either the underlying stream or the `Encoder` is closed, it will forward
 the `close` event:
 
 ```php
-$stream->on('close', function () {
+$csv->on('close', function () {
     // stream closed
     // possibly after an "end" event or due to an "error" event
 });
@@ -364,14 +364,14 @@ The `end(mixed $data = null): void` method can be used to optionally emit
 any final data and then soft-close the `Encoder` and its underlying stream:
 
 ```php
-$stream->end();
+$csv->end();
 ```
 
 The `close(): void` method can be used to explicitly close the `Encoder` and
 its underlying stream:
 
 ```php
-$stream->close();
+$csv->close();
 ```
 
 For more details, see ReactPHP's

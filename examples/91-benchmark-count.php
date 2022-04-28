@@ -20,10 +20,10 @@ if (extension_loaded('xdebug')) {
     echo 'NOTICE: The "xdebug" extension is loaded, this has a major impact on performance.' . PHP_EOL;
 }
 
-$decoder = new AssocDecoder(new ReadableResourceStream(STDIN));
+$csv = new AssocDecoder(new ReadableResourceStream(STDIN));
 
 $count = 0;
-$decoder->on('data', function () use (&$count) {
+$csv->on('data', function () use (&$count) {
     ++$count;
 });
 
@@ -32,7 +32,7 @@ $report = Loop::addPeriodicTimer(0.05, function () use (&$count, $start) {
     printf("\r%d records in %0.3fs...", $count, microtime(true) - $start);
 });
 
-$decoder->on('close', function () use (&$count, $report, $start) {
+$csv->on('close', function () use (&$count, $report, $start) {
     $now = microtime(true);
     Loop::cancelTimer($report);
 

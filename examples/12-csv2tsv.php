@@ -18,7 +18,7 @@ $info = new WritableResourceStream(STDERR);
 
 $delimiter = isset($argv[1]) ? $argv[1] : ',';
 
-$decoder = new Decoder($in, $delimiter);
+$csv = new Decoder($in, $delimiter);
 
 $encoder = new ThroughStream(function ($data) {
     $data = \array_map(function ($value) {
@@ -28,20 +28,20 @@ $encoder = new ThroughStream(function ($data) {
     return \implode("\t", $data) . "\n";
 });
 
-$decoder->pipe($encoder)->pipe($out);
+$csv->pipe($encoder)->pipe($out);
 
-$decoder->on('error', function (Exception $e) use ($info, &$exit) {
+$csv->on('error', function (Exception $e) use ($info, &$exit) {
     $info->write('ERROR: ' . $e->getMessage() . PHP_EOL);
     $exit = 1;
 });
 
 // TSV files MUST include a header line, so complain if CSV input ends without a single line
-$decoder->on('end', $empty = function () use ($info, &$exit) {
+$csv->on('end', $empty = function () use ($info, &$exit) {
     $info->write('ERROR: Empty CSV input' . PHP_EOL);
     $exit = 1;
 });
-$decoder->once('data', function () use ($decoder, $empty) {
-    $decoder->removeListener('end', $empty);
+$csv->once('data', function () use ($csv, $empty) {
+    $csv->removeListener('end', $empty);
 });
 
 $info->write('You can pipe/write a valid CSV stream to STDIN' . PHP_EOL);

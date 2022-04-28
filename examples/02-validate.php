@@ -17,11 +17,11 @@ $info = new WritableResourceStream(STDERR);
 
 $delimiter = isset($argv[1]) ? $argv[1] : ',';
 
-$decoder = new Decoder($in, $delimiter);
+$csv = new Decoder($in, $delimiter);
 $encoder = new Encoder($out, $delimiter);
-$decoder->pipe($encoder);
+$csv->pipe($encoder);
 
-$decoder->on('error', function (Exception $e) use ($info, &$exit) {
+$csv->on('error', function (Exception $e) use ($info, &$exit) {
     $info->write('ERROR: ' . $e->getMessage() . PHP_EOL);
     $exit = 1;
 });

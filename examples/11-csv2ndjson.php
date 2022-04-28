@@ -18,7 +18,7 @@ $info = new WritableResourceStream(STDERR);
 
 $delimiter = isset($argv[1]) ? $argv[1] : ',';
 
-$decoder = new AssocDecoder($in, $delimiter);
+$csv = new AssocDecoder($in, $delimiter);
 
 $encoder = new ThroughStream(function ($data) {
     $data = \array_filter($data, function ($one) {
@@ -28,9 +28,9 @@ $encoder = new ThroughStream(function ($data) {
     return \json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . "\n";
 });
 
-$decoder->pipe($encoder)->pipe($out);
+$csv->pipe($encoder)->pipe($out);
 
-$decoder->on('error', function (Exception $e) use ($info, &$exit) {
+$csv->on('error', function (Exception $e) use ($info, &$exit) {
     $info->write('ERROR: ' . $e->getMessage() . PHP_EOL);
     $exit = 1;
 });

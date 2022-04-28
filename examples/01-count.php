@@ -15,18 +15,18 @@ $info = new WritableResourceStream(STDERR);
 
 $delimiter = isset($argv[1]) ? $argv[1] : ',';
 
-$decoder = new AssocDecoder($in, $delimiter);
+$csv = new AssocDecoder($in, $delimiter);
 
 $count = 0;
-$decoder->on('data', function () use (&$count) {
+$csv->on('data', function () use (&$count) {
     ++$count;
 });
 
-$decoder->on('end', function () use (&$count) {
+$csv->on('end', function () use (&$count) {
     echo $count . PHP_EOL;
 });
 
-$decoder->on('error', function (Exception $e) use (&$count, &$exit, $info) {
+$csv->on('error', function (Exception $e) use (&$count, &$exit, $info) {
     $info->write('ERROR after record ' . $count . ': ' . $e->getMessage() . PHP_EOL);
     $exit = 1;
 });

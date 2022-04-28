@@ -24,46 +24,51 @@ class AssocDecoderTest extends TestCase
 
     public function testEmitDataWithoutNewlineWillNotForward()
     {
+        $this->decoder->on('headers', $this->expectCallableNever());
         $this->decoder->on('data', $this->expectCallableNever());
 
         $this->input->emit('data', array("hello"));
     }
 
-    public function testEmitDataOneLineWillBeSavedAsHeaderAndWillNotForward()
+    public function testEmitDataOneLineWillBeSavedAsHeaderAndWillOnlyForwardHeader()
     {
+        $this->decoder->on('headers', $this->expectCallableOnceWith(array('hello', 'world')));
         $this->decoder->on('data', $this->expectCallableNever());
 
         $this->input->emit('data', array("hello,world\n"));
     }
 
-    public function testEmitDataTwoLinesWillForwardOneRecord()
+    public function testEmitDataTwoLinesWillForwardHeaderAndOneRecord()
     {
+        $this->decoder->on('headers', $this->expectCallableOnceWith(array('name', 'partner')));
         $this->decoder->on('data', $this->expectCallableOnceWith(array('name' => 'alice', 'partner' => 'bob')));
 
         $this->input->emit('data', array("name,partner\nalice,bob\n"));
     }
 
-    public function testEmitDataTwoLinesWithoutTrailingNewlineWillNotForwardRecord()
+    public function testEmitDataTwoLinesWithoutTrailingNewlineWillOnlyForwardHeaderAndNotRecord()
     {
+        $this->decoder->on('headers', $this->expectCallableOnceWith(array('name', 'partner')));
         $this->decoder->on('data', $this->expectCallableNever());
 
         $this->input->emit('data', array("name,partner\nalice,bob"));
     }
 
-    public function testEmitDataTwoLinesWithCustomSemicolonWillForwardOneRecord()
+    public function testEmitDataTwoLinesWithCustomSemicolonWillForwardHeaderAndOneRecord()
     {
         $this->decoder = new AssocDecoder($this->input, ';');
+        $this->decoder->on('headers', $this->expectCallableOnceWith(array('name', 'partner')));
         $this->decoder->on('data', $this->expectCallableOnceWith(array('name' => 'alice', 'partner' => 'bob')));
 
         $this->input->emit('data', array("name;partner\nalice;bob\n"));
     }
 
-    public function testEmitDataTwoLinesButWrongColumnCoundWillEmitErrorAndClose()
+    public function testEmitDataTwoLinesButWrongColumnCountWillForwardHeaderAndWillEmitAndErrorAndClose()
     {
+        $this->decoder->on('headers', $this->expectCallableOnceWith(array('name', 'partner')));
         $this->decoder->on('data', $this->expectCallableNever());
         $this->decoder->on('error', $this->expectCallableOnceWith($this->isInstanceOf('UnexpectedValueException')));
         $this->decoder->on('close', $this->expectCallableOnce());
-
 
         $this->input->emit('data', array("name,partner\nalice\n"));
     }

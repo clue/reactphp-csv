@@ -80,6 +80,7 @@ class AssocDecoder extends EventEmitter implements ReadableStreamInterface
         if ($this->expected === null) {
             $this->headers = $data;
             $this->expected = \count($data);
+            $this->emit('headers', array($data));
         } else {
             if (\count($data) !== $this->expected) {
                 $this->handleError(new \UnexpectedValueException(

@@ -266,7 +266,7 @@ $stdin = new ReadableResourceStream(STDIN);
 $stream = new AssocDecoder($stdin);
 
 $stream->on('data', function ($data) {
-    // data is a parsed element from the CSV stream
+    // $data is a parsed element from the CSV stream
     // line 1: $data = array('name' => 'test', 'id' => '1');
     // line 2: $data = array('name' => 'hello world', 'id' => '2');
     var_dump($data);
@@ -281,7 +281,15 @@ explicitly use this class instead of the underlying [`Decoder`](#decoder).
 In fact, it uses the [`Decoder`](#decoder) class internally. The only difference
 is that this class requires the first line to include the name of headers and
 will use this as keys for all following row data which will be emitted as
-assoc arrays.
+assoc arrays. After receiving the name of headers, this class will always emit
+a `headers` event with a list of header names.
+
+```php
+$stream->on('headers', function (array $headers) {
+    // header line: $headers = array('name', 'id');
+    var_dump($headers);
+});
+```
 
 This implies that the input stream MUST start with one row of header names and
 MUST use the same number of columns for all records. If the input stream does

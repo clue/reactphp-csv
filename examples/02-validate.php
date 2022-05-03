@@ -2,23 +2,19 @@
 
 // $ php examples/02-validate.php < examples/users.csv
 
-use Clue\React\Csv\Decoder;
-use Clue\React\Csv\Encoder;
 use React\EventLoop\Loop;
-use React\Stream\ReadableResourceStream;
-use React\Stream\WritableResourceStream;
 
 require __DIR__ . '/../vendor/autoload.php';
 
 $exit = 0;
-$in = new ReadableResourceStream(STDIN);
-$out = new WritableResourceStream(STDOUT);
-$info = new WritableResourceStream(STDERR);
+$in = new React\Stream\ReadableResourceStream(STDIN);
+$out = new React\Stream\WritableResourceStream(STDOUT);
+$info = new React\Stream\WritableResourceStream(STDERR);
 
 $delimiter = isset($argv[1]) ? $argv[1] : ',';
 
-$csv = new Decoder($in, $delimiter);
-$encoder = new Encoder($out, $delimiter);
+$csv = new Clue\React\Csv\Decoder($in, $delimiter);
+$encoder = new Clue\React\Csv\Encoder($out, $delimiter);
 $csv->pipe($encoder);
 
 $csv->on('error', function (Exception $e) use ($info, &$exit) {

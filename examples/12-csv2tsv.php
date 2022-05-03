@@ -3,24 +3,20 @@
 // $ php examples/12-csv2tsv.php < examples/users.csv > examples/users.tsv
 // see also https://github.com/clue/reactphp-tsv
 
-use Clue\React\Csv\Decoder;
 use React\EventLoop\Loop;
-use React\Stream\ReadableResourceStream;
-use React\Stream\WritableResourceStream;
-use React\Stream\ThroughStream;
 
 require __DIR__ . '/../vendor/autoload.php';
 
 $exit = 0;
-$in = new ReadableResourceStream(STDIN);
-$out = new WritableResourceStream(STDOUT);
-$info = new WritableResourceStream(STDERR);
+$in = new React\Stream\ReadableResourceStream(STDIN);
+$out = new React\Stream\WritableResourceStream(STDOUT);
+$info = new React\Stream\WritableResourceStream(STDERR);
 
 $delimiter = isset($argv[1]) ? $argv[1] : ',';
 
-$csv = new Decoder($in, $delimiter);
+$csv = new Clue\React\Csv\Decoder($in, $delimiter);
 
-$encoder = new ThroughStream(function ($data) {
+$encoder = new React\Stream\ThroughStream(function ($data) {
     $data = \array_map(function ($value) {
         return \addcslashes($value, "\0..\37");
     }, $data);

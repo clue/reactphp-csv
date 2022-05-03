@@ -10,8 +10,6 @@
 // 3) pipe compressed CSV into benchmark script:
 // $ php examples/92-benchmark-count-gzip.php < IRAhandle_tweets_1.csv.gz
 
-use Clue\React\Csv\AssocDecoder;
-use React\ChildProcess\Process;
 use React\EventLoop\Loop;
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -25,13 +23,13 @@ if (extension_loaded('xdebug')) {
 // is preferred here. If the input source is slower (such as an HTTP download)
 // or if `gunzip` is not available (Windows), using a built-in decompressor
 // such as https://github.com/clue/reactphp-zlib would be preferable.
-$process = new Process('exec gunzip', null, null, array(
+$process = new React\ChildProcess\Process('exec gunzip', null, null, array(
     0 => STDIN,
     1 => array('pipe', 'w'),
     STDERR
 ));
 $process->start();
-$csv = new AssocDecoder($process->stdout);
+$csv = new Clue\React\Csv\AssocDecoder($process->stdout);
 
 $count = 0;
 $csv->on('data', function () use (&$count) {

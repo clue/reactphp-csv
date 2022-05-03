@@ -11,7 +11,7 @@ such as a list of user records or log entries. CSV is not exactly a new format
 and has been used in a large number of systems for decades. In particular, CSV
 is often used for historical reasons and despite its shortcomings, it is still a
 very common export format for a large number of tools to interface with
-spreadsheet processors (such as Exel, Calc etc.). This library provides a simple
+spreadsheet processors (such as Excel, Calc etc.). This library provides a simple
 streaming API to process very large CSV files with thousands or even millions of
 rows efficiently without having to load the whole file into memory at once.
 
@@ -40,7 +40,7 @@ rows efficiently without having to load the whole file into memory at once.
 
 ## Support us
 
-We invest a lot of time developing, maintaining and updating our awesome
+We invest a lot of time developing, maintaining, and updating our awesome
 open-source projects. You can help us sustain this high-quality of our work by
 [becoming a sponsor on GitHub](https://github.com/sponsors/clue). Sponsors get
 numerous benefits in return, see our [sponsoring page](https://github.com/sponsors/clue)
@@ -96,9 +96,9 @@ World!"
   started using some CSV-variant long before this standard was defined.
 
 Some applications refer to CSV as Character-Separated Values, simply because
-using another delimiter (such as semicolon or tab) is a rather common approach
+using another delimiter (such as a semicolon or tab) is a rather common approach
 to avoid the need to enclose common values in quotes. This is particularly
-common for systems in Europe (and elsewhere) that use a comma as decimal separator.
+common for systems in Europe (and elsewhere) that use a comma as a decimal separator.
 
 ```
 name;comment
@@ -115,7 +115,7 @@ consistently.
 
 Despite its shortcomings, CSV is widely used and this is unlikely to change any
 time soon. In particular, CSV is a very common export format for a lot of tools
-to interface with spreadsheet processors (such as Exel, Calc etc.). This means
+to interface with spreadsheet processors (such as Excel, Calc etc.). This means
 that CSV is often used for historical reasons and using CSV to store structured
 application data is usually not a good idea nowadays – but exporting to CSV for
 known applications continues to be a very reasonable approach.
@@ -155,11 +155,11 @@ test,1,24
 "hello world",2,48
 ```
 ```php
-$stdin = new ReadableResourceStream(STDIN);
+$stdin = new React\Stream\ReadableResourceStream(STDIN);
 
-$csv = new Decoder($stdin);
+$csv = new Clue\React\Csv\Decoder($stdin);
 
-$csv->on('data', function ($data) {
+$csv->on('data', function (array $data) {
     // $data is a parsed element from the CSV stream
     // line 1: $data = array('test', '1', '24');
     // line 2: $data = array('hello world', '2', '48');
@@ -179,9 +179,9 @@ use a quote enclosure character (`"`) and a backslash escape character (`\`).
 This behavior can be controlled through the optional constructor parameters:
 
 ```php
-$csv = new Decoder($stdin, ';');
+$csv = new Clue\React\Csv\Decoder($stdin, ';');
 
-$csv->on('data', function ($data) {
+$csv->on('data', function (array $data) {
     // CSV fields will now be delimited by semicolon
 });
 ```
@@ -193,7 +193,7 @@ unreasonably long lines. It accepts an additional argument if you want to change
 this from the default of 64 KiB:
 
 ```php
-$csv = new Decoder($stdin, ',', '"', '\\', 64 * 1024);
+$csv = new Clue\React\Csv\Decoder($stdin, ',', '"', '\\', 64 * 1024);
 ```
 
 If the underlying stream emits an `error` event or the plain stream contains
@@ -261,11 +261,11 @@ test,1
 "hello world",2
 ```
 ```php
-$stdin = new ReadableResourceStream(STDIN);
+$stdin = new React\Stream\ReadableResourceStream(STDIN);
 
-$csv = new AssocDecoder($stdin);
+$csv = new Clue\React\Csv\AssocDecoder($stdin);
 
-$csv->on('data', function ($data) {
+$csv->on('data', function (array $data) {
     // $data is a parsed element from the CSV stream
     // line 1: $data = array('name' => 'test', 'id' => '1');
     // line 2: $data = array('name' => 'hello world', 'id' => '2');
@@ -312,9 +312,9 @@ and accepts its data through the same interface, but handles any data as complet
 CSV elements instead of just chunks of strings:
 
 ```php
-$stdout = new WritableResourceStream(STDOUT);
+$stdout = new React\Stream\WritableResourceStream(STDOUT);
 
-$csv = new Encoder($stdout);
+$csv = new Clue\React\Csv\Encoder($stdout);
 
 $csv->write(array('test', true, 24));
 $csv->write(array('hello world', 2, 48));
@@ -332,7 +332,7 @@ a Unix-style EOL (`\n` or `LF`).
 This behavior can be controlled through the optional constructor parameters:
 
 ```php
-$csv = new Encoder($stdout, ';');
+$csv = new Clue\React\Csv\Encoder($stdout, ';');
 
 $csv->write(array('hello', 'world'));
 ```
@@ -379,7 +379,7 @@ For more details, see ReactPHP's
 
 ## Install
 
-The recommended way to install this library is [through Composer](https://getcomposer.org).
+The recommended way to install this library is [through Composer](https://getcomposer.org/).
 [New to Composer?](https://getcomposer.org/doc/00-intro.md)
 
 This project follows [SemVer](https://semver.org/).
@@ -394,12 +394,12 @@ See also the [CHANGELOG](CHANGELOG.md) for details about version upgrades.
 This project aims to run on any platform and thus does not require any PHP
 extensions and supports running on legacy PHP 5.3 through current PHP 8+ and
 HHVM.
-It's *highly recommended to use the latest supported PHP version PHP 7+* for this project.
+It's *highly recommended to use the latest supported PHP version* for this project.
 
 ## Tests
 
 To run the test suite, you first need to clone this repo and then install all
-dependencies [through Composer](https://getcomposer.org):
+dependencies [through Composer](https://getcomposer.org/):
 
 ```bash
 $ composer install
@@ -408,7 +408,7 @@ $ composer install
 To run the test suite, go to the project root and run:
 
 ```bash
-$ php vendor/bin/phpunit
+$ vendor/bin/phpunit
 ```
 
 ## License

@@ -10,9 +10,7 @@
 // 2) pipe CSV into benchmark script:
 // $ php examples/91-benchmark-count.php < IRAhandle_tweets_1.csv
 
-use Clue\React\Csv\AssocDecoder;
 use React\EventLoop\Loop;
-use React\Stream\ReadableResourceStream;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -20,7 +18,7 @@ if (extension_loaded('xdebug')) {
     echo 'NOTICE: The "xdebug" extension is loaded, this has a major impact on performance.' . PHP_EOL;
 }
 
-$csv = new AssocDecoder(new ReadableResourceStream(STDIN));
+$csv = new Clue\React\Csv\AssocDecoder(new React\Stream\ReadableResourceStream(STDIN));
 
 $count = 0;
 $csv->on('data', function () use (&$count) {

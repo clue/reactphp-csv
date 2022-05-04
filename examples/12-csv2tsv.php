@@ -3,24 +3,20 @@
 // $ php examples/12-csv2tsv.php < examples/users.csv > examples/users.tsv
 // see also https://github.com/clue/reactphp-tsv
 
-use Clue\React\Csv\Decoder;
 use React\EventLoop\Loop;
-use React\Stream\ReadableResourceStream;
-use React\Stream\WritableResourceStream;
-use React\Stream\ThroughStream;
 
 require __DIR__ . '/../vendor/autoload.php';
 
 $exit = 0;
-$in = new ReadableResourceStream(STDIN);
-$out = new WritableResourceStream(STDOUT);
-$info = new WritableResourceStream(STDERR);
+$in = new React\Stream\ReadableResourceStream(STDIN);
+$out = new React\Stream\WritableResourceStream(STDOUT);
+$info = new React\Stream\WritableResourceStream(STDERR);
 
 $delimiter = isset($argv[1]) ? $argv[1] : ',';
 
-$decoder = new Decoder($in, $delimiter);
+$csv = new Clue\React\Csv\Decoder($in, $delimiter);
 
-$encoder = new ThroughStream(function ($data) {
+$encoder = new React\Stream\ThroughStream(function ($data) {
     $data = \array_map(function ($value) {
         return \addcslashes($value, "\0..\37");
     }, $data);
@@ -28,20 +24,20 @@ $encoder = new ThroughStream(function ($data) {
     return \implode("\t", $data) . "\n";
 });
 
-$decoder->pipe($encoder)->pipe($out);
+$csv->pipe($encoder)->pipe($out);
 
-$decoder->on('error', function (Exception $e) use ($info, &$exit) {
+$csv->on('error', function (Exception $e) use ($info, &$exit) {
     $info->write('ERROR: ' . $e->getMessage() . PHP_EOL);
     $exit = 1;
 });
 
 // TSV files MUST include a header line, so complain if CSV input ends without a single line
-$decoder->on('end', $empty = function () use ($info, &$exit) {
+$csv->on('end', $empty = function () use ($info, &$exit) {
     $info->write('ERROR: Empty CSV input' . PHP_EOL);
     $exit = 1;
 });
-$decoder->once('data', function () use ($decoder, $empty) {
-    $decoder->removeListener('end', $empty);
+$csv->once('data', function () use ($csv, $empty) {
+    $csv->removeListener('end', $empty);
 });
 
 $info->write('You can pipe/write a valid CSV stream to STDIN' . PHP_EOL);

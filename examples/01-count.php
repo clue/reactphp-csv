@@ -2,31 +2,28 @@
 
 // $ php examples/01-count.php < examples/users.csv
 
-use Clue\React\Csv\AssocDecoder;
 use React\EventLoop\Loop;
-use React\Stream\ReadableResourceStream;
-use React\Stream\WritableResourceStream;
 
 require __DIR__ . '/../vendor/autoload.php';
 
 $exit = 0;
-$in = new ReadableResourceStream(STDIN);
-$info = new WritableResourceStream(STDERR);
+$in = new React\Stream\ReadableResourceStream(STDIN);
+$info = new React\Stream\WritableResourceStream(STDERR);
 
 $delimiter = isset($argv[1]) ? $argv[1] : ',';
 
-$decoder = new AssocDecoder($in, $delimiter);
+$csv = new Clue\React\Csv\AssocDecoder($in, $delimiter);
 
 $count = 0;
-$decoder->on('data', function () use (&$count) {
+$csv->on('data', function () use (&$count) {
     ++$count;
 });
 
-$decoder->on('end', function () use (&$count) {
+$csv->on('end', function () use (&$count) {
     echo $count . PHP_EOL;
 });
 
-$decoder->on('error', function (Exception $e) use (&$count, &$exit, $info) {
+$csv->on('error', function (Exception $e) use (&$count, &$exit, $info) {
     $info->write('ERROR after record ' . $count . ': ' . $e->getMessage() . PHP_EOL);
     $exit = 1;
 });

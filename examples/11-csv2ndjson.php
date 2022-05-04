@@ -3,24 +3,20 @@
 // $ php examples/11-csv2ndjson.php < examples/users.csv > examples/users.ndjson
 // see also https://github.com/clue/reactphp-ndjson
 
-use Clue\React\Csv\AssocDecoder;
 use React\EventLoop\Loop;
-use React\Stream\ReadableResourceStream;
-use React\Stream\WritableResourceStream;
-use React\Stream\ThroughStream;
 
 require __DIR__ . '/../vendor/autoload.php';
 
 $exit = 0;
-$in = new ReadableResourceStream(STDIN);
-$out = new WritableResourceStream(STDOUT);
-$info = new WritableResourceStream(STDERR);
+$in = new React\Stream\ReadableResourceStream(STDIN);
+$out = new React\Stream\WritableResourceStream(STDOUT);
+$info = new React\Stream\WritableResourceStream(STDERR);
 
 $delimiter = isset($argv[1]) ? $argv[1] : ',';
 
-$decoder = new AssocDecoder($in, $delimiter);
+$csv = new Clue\React\Csv\AssocDecoder($in, $delimiter);
 
-$encoder = new ThroughStream(function ($data) {
+$encoder = new React\Stream\ThroughStream(function ($data) {
     $data = \array_filter($data, function ($one) {
         return ($one !== '');
     });
@@ -28,9 +24,9 @@ $encoder = new ThroughStream(function ($data) {
     return \json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . "\n";
 });
 
-$decoder->pipe($encoder)->pipe($out);
+$csv->pipe($encoder)->pipe($out);
 
-$decoder->on('error', function (Exception $e) use ($info, &$exit) {
+$csv->on('error', function (Exception $e) use ($info, &$exit) {
     $info->write('ERROR: ' . $e->getMessage() . PHP_EOL);
     $exit = 1;
 });

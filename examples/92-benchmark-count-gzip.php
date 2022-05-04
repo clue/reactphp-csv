@@ -10,8 +10,6 @@
 // 3) pipe compressed CSV into benchmark script:
 // $ php examples/92-benchmark-count-gzip.php < IRAhandle_tweets_1.csv.gz
 
-use Clue\React\Csv\AssocDecoder;
-use React\ChildProcess\Process;
 use React\EventLoop\Loop;
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -25,16 +23,16 @@ if (extension_loaded('xdebug')) {
 // is preferred here. If the input source is slower (such as an HTTP download)
 // or if `gunzip` is not available (Windows), using a built-in decompressor
 // such as https://github.com/clue/reactphp-zlib would be preferable.
-$process = new Process('exec gunzip', null, null, array(
+$process = new React\ChildProcess\Process('exec gunzip', null, null, array(
     0 => STDIN,
     1 => array('pipe', 'w'),
     STDERR
 ));
 $process->start();
-$decoder = new AssocDecoder($process->stdout);
+$csv = new Clue\React\Csv\AssocDecoder($process->stdout);
 
 $count = 0;
-$decoder->on('data', function () use (&$count) {
+$csv->on('data', function () use (&$count) {
     ++$count;
 });
 
@@ -43,7 +41,7 @@ $report = Loop::addPeriodicTimer(0.05, function () use (&$count, $start) {
     printf("\r%d records in %0.3fs...", $count, microtime(true) - $start);
 });
 
-$decoder->on('close', function () use (&$count, $report, $start) {
+$csv->on('close', function () use (&$count, $report, $start) {
     $now = microtime(true);
     Loop::cancelTimer($report);
 

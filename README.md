@@ -173,7 +173,7 @@ element may be broken up into multiple chunks.
 This class reassembles these elements by buffering incomplete ones.
 
 The `Decoder` supports the same optional parameters as the underlying
-[`str_getcsv()`](http://php.net/str_getcsv) function.
+[`str_getcsv()`](https://www.php.net/manual/en/function.str-getcsv.php) function.
 This means that, by default, CSV fields will be delimited by a comma (`,`), will
 use a quote enclosure character (`"`) and a backslash escape character (`\`).
 This behavior can be controlled through the optional constructor parameters:
@@ -386,7 +386,7 @@ This project follows [SemVer](https://semver.org/).
 This will install the latest supported version:
 
 ```bash
-$ composer require clue/reactphp-csv:^1.2
+composer require clue/reactphp-csv:^1.2
 ```
 
 See also the [CHANGELOG](CHANGELOG.md) for details about version upgrades.
@@ -402,13 +402,13 @@ To run the test suite, you first need to clone this repo and then install all
 dependencies [through Composer](https://getcomposer.org/):
 
 ```bash
-$ composer install
+composer install
 ```
 
 To run the test suite, go to the project root and run:
 
 ```bash
-$ vendor/bin/phpunit
+vendor/bin/phpunit
 ```
 
 ## License

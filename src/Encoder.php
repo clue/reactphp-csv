@@ -82,7 +82,7 @@ class Encoder extends EventEmitter implements WritableStreamInterface
 
         // manually replace custom EOL on PHP < 8.1
         if (\PHP_VERSION_ID < 80100 && $this->eol !== "\n") {
-            $data = \substr($data, 0, -1) . $this->eol;
+            $data = \substr($data, 0, -1) . $this->eol; // @codeCoverageIgnore
         }
 
         return $this->output->write($data);
